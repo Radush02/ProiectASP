@@ -5,8 +5,11 @@ namespace ProiectASP.Models
 {
     public class User
     {
+        [Column("id")]
         public int ID { get; set; }
+        [Column("UserName")]
         public string UserName { get; set; }
+        [Column("Nume")]
         public string Nume { get; set; }
         public AdresaLivrare AdreseLivrare { get; set; }
     }

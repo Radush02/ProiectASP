@@ -15,9 +15,7 @@ namespace ProiectASP.Data
                 .WithOne()
                 .HasForeignKey<AdresaLivrare>(a => a.ID);
 
-            modelBuilder.Ignore<AppReview>();
-            //modelBuilder.Ignore<Produs>();
-            //modelBuilder.Ignore<Comanda>();
+
 
         }
         public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) : base(options) 
