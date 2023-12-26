@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using ProiectASP.Data;
 using ProiectASP.Models;
 using ProiectASP.Exceptions;
+using Microsoft.EntityFrameworkCore;
 
 namespace ProiectASP.Services
 {
@@ -17,15 +18,14 @@ namespace ProiectASP.Services
 
         public async Task<IEnumerable<User>> GetAllUsers()
         {
-            return await Task.FromResult(_dbContext.User.ToList());
+            return await Task.FromResult(_dbContext.User.Include(u=>u.AdreseLivrare).ToList());
         }
-
         public async Task<User> GetUserById(int userId)
         {
-            var user = await _dbContext.User.FindAsync(userId);
+            var user = await _dbContext.User.Include(u=>u.AdreseLivrare).FirstOrDefaultAsync(u=>u.ID==userId);
 
             if (user == null){
-                throw new NotFoundException($"Nu s-a gasit user cu ID-ul {userId}.");
+                throw new NotFoundException($"Nu exista user cu ID-ul {userId}.");
             }
             return user;
         }
@@ -33,20 +33,42 @@ namespace ProiectASP.Services
         public async Task CreateUser(User user)
         {
             _dbContext.User.Add(user);
+
+            if (user.AdreseLivrare != null){
+                _dbContext.AdresaLivrare.Add(user.AdreseLivrare);
+            }
+
             await _dbContext.SaveChangesAsync();
         }
 
         public async Task UpdateUser(User user)
         {
             _dbContext.User.Update(user);
+
+            if (user.AdreseLivrare != null){
+                _dbContext.AdresaLivrare.Update(user.AdreseLivrare);
+            }
+
             await _dbContext.SaveChangesAsync();
         }
 
         public async Task DeleteUser(int userId)
         {
-            var userToRemove = await _dbContext.User.FindAsync(userId);
+
+            var userToRemove = await _dbContext.User
+                .Include(u => u.AdreseLivrare)
+                .FirstOrDefaultAsync(u => u.ID == userId);
+
+            if (userToRemove == null)
+            {
+                throw new NotFoundException($"Nu exista user cu ID-ul {userId}.");
+            }
+
             if (userToRemove != null)
             {
+                if (userToRemove.AdreseLivrare != null){
+                    _dbContext.AdresaLivrare.Remove(userToRemove.AdreseLivrare);
+                }
                 _dbContext.User.Remove(userToRemove);
                 await _dbContext.SaveChangesAsync();
             }

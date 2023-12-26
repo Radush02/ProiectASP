@@ -8,6 +8,5 @@ namespace ProiectASP.Models
         public int ID { get; set; }
         public string Adresa { get; set; }
         public string Oras { get; set; }
-        public User Users { get; set; }
     }
 }

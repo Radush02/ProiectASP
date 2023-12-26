@@ -12,13 +12,12 @@ namespace ProiectASP.Data
 
             modelBuilder.Entity<User>()
                 .HasOne(u => u.AdreseLivrare)
-                .WithOne(a => a.Users)
+                .WithOne()
                 .HasForeignKey<AdresaLivrare>(a => a.ID);
-            
-            modelBuilder.Entity<AdresaLivrare>()
-                    .HasOne(a => a.Users)
-                    .WithOne(u => u.AdreseLivrare)
-                    .HasForeignKey<AdresaLivrare>(a => a.ID);
+
+            modelBuilder.Ignore<AppReview>();
+            //modelBuilder.Ignore<Produs>();
+            //modelBuilder.Ignore<Comanda>();
 
         }
         public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) : base(options) 

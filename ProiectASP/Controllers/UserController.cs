@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using ProiectASP.Models;
 using ProiectASP.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace ProiectASP.Controllers
 {
