@@ -1,8 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using TemaASP.Data;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using ProiectASP.Data;
+using ProiectASP.Models;
 
-namespace TemaASP.Controllers
+namespace ProiectASP.Controllers
 {
+    [Authorize]
+    [ApiController]
+    [Route("api/[controller]")]
     public class ProdusController : Controller
     {
         private readonly ApplicationDBContext _context;
@@ -10,11 +15,6 @@ namespace TemaASP.Controllers
         {
             _context = context;
         }
-        public IActionResult Index()
-        {
-            var produse = _context.Produs.ToList();
-
-            return View(produse);
-        }
+ 
     }
 }

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TemaASP.Models
+namespace ProiectASP.Models
 {
     public class ErrorViewModel
     {

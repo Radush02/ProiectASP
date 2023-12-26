@@ -1,4 +1,4 @@
-﻿namespace TemaASP.Models
+﻿namespace ProiectASP.Models
 {
     public class Produs
     {
@@ -6,7 +6,5 @@
         public string Nume { get; set; }
         public decimal Pret { get; set; }
         public string Descriere { get; set; }
-
-        public List<Comanda> Comenzi { get; set; }
     }
 }

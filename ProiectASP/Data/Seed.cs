@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Diagnostics;
 using System.Net;
-using TemaASP.Models.Enum;
+using ProiectASP.Models.Enum;
 
-namespace TemaASP.Data
+namespace ProiectASP.Data
 {
     public class Seed
     {

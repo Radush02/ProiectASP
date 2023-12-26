@@ -1,4 +1,4 @@
-﻿namespace TemaASP.Models.Enum
+﻿namespace ProiectASP.Models.Enum
 {
     public enum UserRoles
     {

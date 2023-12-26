@@ -1,4 +1,4 @@
-﻿namespace TemaASP.Models
+﻿namespace ProiectASP.Models
 {
     public class AppReview
     {

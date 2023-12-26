@@ -1,4 +1,4 @@
-﻿namespace TemaASP.Models
+﻿namespace ProiectASP.Models
 {
     public class Comanda
     {
@@ -7,7 +7,7 @@
         public int UserID { get; set; }
         public int ProdusID { get; set; }
         public int pret { get; set; }
-        public List<User> Users { get; set; }
+        public User Users { get; set; }
         public List<Produs> Produse { get; set; }
     }
 }

@@ -1,11 +1,26 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TemaASP.Models;
+using ProiectASP.Models;
 
-namespace TemaASP.Data
+namespace ProiectASP.Data
 {
     //6.0.25
     public class ApplicationDBContext : DbContext
     {
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.AdreseLivrare)
+                .WithOne(a => a.Users)
+                .HasForeignKey<AdresaLivrare>(a => a.ID);
+            
+            modelBuilder.Entity<AdresaLivrare>()
+                    .HasOne(a => a.Users)
+                    .WithOne(u => u.AdreseLivrare)
+                    .HasForeignKey<AdresaLivrare>(a => a.ID);
+
+        }
         public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) : base(options) 
         { 
             
