@@ -4,13 +4,19 @@ using ProiectASP.Data;
 using ProiectASP.Models;
 using ProiectASP.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using ProiectASP.Repositories;
 
 namespace ProiectASP.Services
 {
     public class UserService : IUserServices
     {
         private readonly ApplicationDBContext _dbContext;
+        private readonly IUserRepository _userRepository;
 
+        public UserService(IUserRepository userRepository)
+        {
+            _userRepository = userRepository;
+        }
         public UserService(ApplicationDBContext dbContext)
         {
             _dbContext = dbContext;
@@ -51,7 +57,15 @@ namespace ProiectASP.Services
 
             await _dbContext.SaveChangesAsync();
         }
+        public async Task ChangePassword(string username, string oldPass, string newPass)
+        {
+            bool passwordChanged = await _userRepository.ChangePassword(username, oldPass, newPass);
 
+            if (!passwordChanged)
+            {
+                throw new NotFoundException("Nu s-a putut schimba parola. Parola veche gresita.");
+            }
+        }
         public async Task DeleteUser(int userId)
         {
 

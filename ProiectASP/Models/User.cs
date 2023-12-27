@@ -11,6 +11,9 @@ namespace ProiectASP.Models
         public string UserName { get; set; }
         [Column("Nume")]
         public string Nume { get; set; }
+
+        public string PassHash { get; set; }
+        public string Salt {  get; set; }
         public AdresaLivrare AdreseLivrare { get; set; }
     }
 

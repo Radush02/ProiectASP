@@ -11,5 +11,6 @@ namespace ProiectASP.Services
         Task CreateUser(User user);
         Task UpdateUser(User user);
         Task DeleteUser(int userId);
+        Task ChangePassword(string username, string oldPass, string newPass);
     }
 }
