@@ -9,15 +9,13 @@ namespace ProiectASP.Services.ComandaService
     public class ComandaServices : IComandaServices
     {
         private readonly IComandaRepository _comandaRepository;
-        public ComandaServices(IComandaRepository comandaRepository)
+        private readonly ApplicationDBContext _dbContext;
+        public ComandaServices(IComandaRepository comandaRepository,ApplicationDBContext dbContext)
         {
             _comandaRepository = comandaRepository;
-        }
-        private readonly ApplicationDBContext _dbContext;
-        public ComandaServices(ApplicationDBContext dbContext)
-        {
             _dbContext = dbContext;
         }
+
         public async Task<IEnumerable<Comanda>> GetAllComenzi()
         {
             return await Task.FromResult(_dbContext.Comanda.Include(u=>u.Users).ThenInclude(a=>a.AdreseLivrare).Include(p=>p.Produse).ToList());

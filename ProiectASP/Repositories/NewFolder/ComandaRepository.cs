@@ -15,6 +15,7 @@ namespace ProiectASP.Repositories
         }
         public async Task<IEnumerable<ComandaDetails>> GetComenzi(int userID)
         {
+            Console.WriteLine("Before LINQ query");
             var comenziDetails = await (from c in _dbContext.Comanda
                                         join p in _dbContext.Produs on c.ProdusID equals p.ID
                                         join u in _dbContext.User on c.UserID equals u.ID
@@ -27,6 +28,8 @@ namespace ProiectASP.Repositories
                                             Cantitate = c.cantitate,
                                             CostProd = p.Pret * c.cantitate
                                         }).ToListAsync();
+            Console.WriteLine("After LINQ query");
+            Console.WriteLine(comenziDetails);
 
             return comenziDetails;
         }
