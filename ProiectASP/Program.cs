@@ -4,6 +4,9 @@ using ProiectASP.Services;
 using ProiectASP.Services.ProdusService;
 using ProiectASP.Services.ComandaService;
 using ProiectASP.Repositories;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using ProiectASP.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +21,8 @@ builder.Services.AddScoped<IUserServices, UserService>();
 builder.Services.AddScoped<IProdusServices, ProdusServices>();
 builder.Services.AddScoped<IComandaServices, ComandaServices>();
 builder.Services.AddScoped<IComandaRepository, ComandaRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

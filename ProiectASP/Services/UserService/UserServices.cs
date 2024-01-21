@@ -13,13 +13,10 @@ namespace ProiectASP.Services
         private readonly ApplicationDBContext _dbContext;
         private readonly IUserRepository _userRepository;
 
-        public UserService(IUserRepository userRepository)
-        {
-            _userRepository = userRepository;
-        }
-        public UserService(ApplicationDBContext dbContext)
+        public UserService(ApplicationDBContext dbContext, IUserRepository userRepository)
         {
             _dbContext = dbContext;
+            _userRepository = userRepository;
         }
 
         public async Task<IEnumerable<User>> GetAllUsers()
@@ -66,6 +63,19 @@ namespace ProiectASP.Services
                 throw new NotFoundException("Nu s-a putut schimba parola. Parola veche gresita.");
             }
         }
+        public async Task CreateWithPassword(User u,string password)
+        {
+            await _userRepository.CreateUserWithHashedPassword(u, password);
+        }
+        public async Task<bool> Login(string username, string password)
+        {
+           return await _userRepository.Login(username, password);
+        }
+        public int getHighestUserID()
+        {
+            return _dbContext.User.Max(u => u.ID);
+        }
+
         public async Task DeleteUser(int userId)
         {
 

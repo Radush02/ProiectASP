@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ProiectASP.Models
 {
-    public class User:IdentityUser
+    public class User
     {
         [Column("id")]
         public int ID { get; set; }

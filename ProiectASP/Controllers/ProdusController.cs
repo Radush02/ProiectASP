@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProiectASP.Exceptions;
 using ProiectASP.Models;
@@ -9,6 +10,7 @@ namespace ProiectASP.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles="Admin")]
     public class ProdusController : ControllerBase
     {
         private readonly IProdusServices _produsServices;

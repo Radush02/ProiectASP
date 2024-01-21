@@ -44,6 +44,31 @@ namespace ProiectASP.Repositories
             }
             return salt;
         }
+        public async Task<bool> Login(string username, string password)
+        {
+            var user = await _dbContext.User.SingleOrDefaultAsync(u => u.UserName == username);
+            if (user == null)
+            {
+                return false;
+            }
+
+            byte[] saltBytes = Convert.FromBase64String(user.Salt);
+            byte[] PassBytes = Encoding.UTF8.GetBytes(password);
+            byte[] combinedBytes = new byte[PassBytes.Length + saltBytes.Length];
+            Buffer.BlockCopy(PassBytes, 0, combinedBytes, 0, PassBytes.Length);
+            Buffer.BlockCopy(saltBytes, 0, combinedBytes, PassBytes.Length, saltBytes.Length);
+
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] hashBytes = sha256.ComputeHash(combinedBytes);
+                string hashedOldPass = Convert.ToBase64String(hashBytes);
+
+                if (hashedOldPass != user.PassHash){
+                    return false;
+                }
+            }
+            return true;
+        }
         public async Task<bool> ChangePassword(string username, string oldPass, string newPass)
         {
             var user = await _dbContext.User.SingleOrDefaultAsync(u => u.UserName == username);
