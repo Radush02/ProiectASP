@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using ProiectASP.Models;
 using ProiectASP.Services;
 using Microsoft.EntityFrameworkCore;
+using ProiectASP.Models.DTOs.UserDTOs;
 
 namespace ProiectASP.Controllers
 {
@@ -20,7 +21,7 @@ namespace ProiectASP.Controllers
 
         // GET: api/user
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserInfoDTO>>> GetUsers()
         {
             var users = await _userService.GetAllUsers();
             return Ok(users);
@@ -28,7 +29,7 @@ namespace ProiectASP.Controllers
 
         // GET: api/user/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUserById(int id)
+        public async Task<ActionResult<UserInfoDTO>> GetUserById(int id)
         {
             var user = await _userService.GetUserById(id);
 
@@ -40,33 +41,18 @@ namespace ProiectASP.Controllers
             return Ok(user);
         }
 
-        // POST: api/user
-        [HttpPost]
-        public async Task<ActionResult<User>> CreateUser(User user)
-        {
-            await _userService.CreateUser(user);
-
-            return CreatedAtAction(nameof(GetUserById), new { id = user.ID }, user);
-        }
         [HttpPost("createWithPassword")]
-        public async Task<IActionResult> CreateWithPassword(string username, string name, string password)
+        public async Task<IActionResult> CreateWithPassword(FullUserDTO u)
         {
-
-                int highestUserId = _userService.getHighestUserID();
-                var newUser = new User
-                {
-                    ID = highestUserId + 1,
-                    UserName = username,
-                    Nume = name,
-                };
-                await _userService.CreateWithPassword(newUser, password);
-               return Ok(newUser);
+            await _userService.CreateWithPassword(u);
+            await _userService.AddAdresa(u);
+            return Ok(u);
             
         }
         [HttpGet("Login")]
-        public async Task<IActionResult> Login(string username,string password)
+        public async Task<IActionResult> Login(UserLoginDTO user)
         {
-            if(await _userService.Login(username, password)==true)
+            if(await _userService.Login(user.UserName, user.Parola)==true)
             { 
                 return Ok(); 
             }
@@ -74,20 +60,13 @@ namespace ProiectASP.Controllers
 
         }
         // PUT: api/user/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id, User user)
+        [HttpPut]
+        public async Task<IActionResult> UpdateUser(FullUserDTO user)
         {
-            if (id != user.ID)
-            {
-                return BadRequest();
-            }
 
             await _userService.UpdateUser(user);
-
             return NoContent();
         }
-
-        // DELETE: api/user/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {

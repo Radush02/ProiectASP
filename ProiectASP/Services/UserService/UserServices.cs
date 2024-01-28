@@ -5,6 +5,7 @@ using ProiectASP.Models;
 using ProiectASP.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using ProiectASP.Repositories;
+using ProiectASP.Models.DTOs.UserDTOs;
 
 namespace ProiectASP.Services
 {
@@ -19,18 +20,43 @@ namespace ProiectASP.Services
             _userRepository = userRepository;
         }
 
-        public async Task<IEnumerable<User>> GetAllUsers()
+        public async Task<IEnumerable<UserInfoDTO>> GetAllUsers()
         {
-            return await Task.FromResult(_dbContext.User.Include(u=>u.AdreseLivrare).ToList());
+            var usersFromDb = await Task.FromResult(_dbContext.User.Include(u => u.AdreseLivrare).ToList());
+
+            List<UserInfoDTO> users = new List<UserInfoDTO>();
+
+            foreach (var user in usersFromDb)
+            {
+                UserInfoDTO userInfo = new UserInfoDTO
+                {
+                    UserName = user.UserName,
+                    Nume = user.Nume,
+                    Adresa = user.AdreseLivrare?.Adresa, 
+                    Oras = user.AdreseLivrare?.Oras
+                };
+
+                users.Add(userInfo);
+            }
+
+            return users;
         }
-        public async Task<User> GetUserById(int userId)
+        public async Task<UserInfoDTO> GetUserById(int userId)
         {
             var user = await _dbContext.User.Include(u=>u.AdreseLivrare).FirstOrDefaultAsync(u=>u.ID==userId);
 
             if (user == null){
                 throw new NotFoundException($"Nu exista user cu ID-ul {userId}.");
             }
-            return user;
+
+
+            return new UserInfoDTO
+            {
+                UserName = user.UserName,
+                Nume = user.Nume,
+                Adresa = user.AdreseLivrare?.Adresa,
+                Oras = user.AdreseLivrare?.Oras
+            };
         }
 
         public async Task CreateUser(User user)
@@ -44,14 +70,20 @@ namespace ProiectASP.Services
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task UpdateUser(User user)
+        public async Task UpdateUser(FullUserDTO u)
         {
+            var user = await _dbContext.User.Include(k=>k.AdreseLivrare).FirstOrDefaultAsync(k=>k.UserName==u.UserName);
+            if (user == null)
+            {
+                throw new NotFoundException($"Nu exista userul cu username {u.UserName}");
+            }
+            user.Nume = u.Nume;
+
             _dbContext.User.Update(user);
 
-            if (user.AdreseLivrare != null){
-                _dbContext.AdresaLivrare.Update(user.AdreseLivrare);
-            }
-
+            user.AdreseLivrare.Adresa = u.Adresa;
+            user.AdreseLivrare.Oras = u.Oras;
+            _dbContext.AdresaLivrare.Update(user.AdreseLivrare);
             await _dbContext.SaveChangesAsync();
         }
         public async Task ChangePassword(string username, string oldPass, string newPass)
@@ -63,9 +95,28 @@ namespace ProiectASP.Services
                 throw new NotFoundException("Nu s-a putut schimba parola. Parola veche gresita.");
             }
         }
-        public async Task CreateWithPassword(User u,string password)
+        public async Task AddAdresa(FullUserDTO u)
         {
-            await _userRepository.CreateUserWithHashedPassword(u, password);
+            int highestUserId = getHighestUserID();
+            var a = new AdresaLivrare
+            {
+                ID = highestUserId,
+                Adresa = u.Adresa,
+                Oras = u.Oras
+            };
+            _dbContext.AdresaLivrare.Add(a);
+            await _dbContext.SaveChangesAsync();
+        }
+        public async Task CreateWithPassword(FullUserDTO usr)
+        {
+            int highestUserId = getHighestUserID();
+            var u = new User
+            {
+                ID = highestUserId + 1,
+                UserName = usr.UserName,
+                Nume = usr.Nume
+            };
+            await _userRepository.CreateUserWithHashedPassword(u, usr.Parola);
         }
         public async Task<bool> Login(string username, string password)
         {
@@ -73,7 +124,14 @@ namespace ProiectASP.Services
         }
         public int getHighestUserID()
         {
-            return _dbContext.User.Max(u => u.ID);
+            try
+            {
+                return _dbContext.User.Max(u => u.ID);
+            }
+            catch
+            {
+                return 1;
+            }
         }
 
         public async Task DeleteUser(int userId)

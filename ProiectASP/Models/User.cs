@@ -4,18 +4,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ProiectASP.Models
 {
-    public class User
-    {
-        [Column("id")]
-        public int ID { get; set; }
-        [Column("UserName")]
-        public string UserName { get; set; }
-        [Column("Nume")]
-        public string Nume { get; set; }
+        public class User
+        {
 
-        public string PassHash { get; set; }
-        public string Salt {  get; set; }
-        public AdresaLivrare AdreseLivrare { get; set; }
-    }
+            public int ID { get; set; }
+
+            public string UserName { get; set; }
+            public string Nume { get; set; }
+
+            public string PassHash { get; set; }
+            public string Salt {  get; set; }
+            public AdresaLivrare AdreseLivrare { get; set; }
+        
+            public ICollection<Comanda> Comenzi {  get; set; }
+        }
 
 }

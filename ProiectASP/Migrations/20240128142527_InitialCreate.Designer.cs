@@ -12,7 +12,7 @@ using ProiectASP.Data;
 namespace ProiectASP.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20231226115747_InitialCreate")]
+    [Migration("20240128142527_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,43 +24,10 @@ namespace ProiectASP.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("AdresaLivrareUser", b =>
-                {
-                    b.Property<int>("AdreseLivrareID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UsersID")
-                        .HasColumnType("int");
-
-                    b.HasKey("AdreseLivrareID", "UsersID");
-
-                    b.HasIndex("UsersID");
-
-                    b.ToTable("AdresaLivrareUser");
-                });
-
-            modelBuilder.Entity("ComandaProdus", b =>
-                {
-                    b.Property<int>("ComenziID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProduseID")
-                        .HasColumnType("int");
-
-                    b.HasKey("ComenziID", "ProduseID");
-
-                    b.HasIndex("ProduseID");
-
-                    b.ToTable("ComandaProdus");
-                });
-
             modelBuilder.Entity("ProiectASP.Models.AdresaLivrare", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
 
                     b.Property<string>("Adresa")
                         .IsRequired()
@@ -101,24 +68,25 @@ namespace ProiectASP.Migrations
             modelBuilder.Entity("ProiectASP.Models.Comanda", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
-
-                    b.Property<DateTime>("DataComenzii")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ProdusID")
                         .HasColumnType("int");
 
                     b.Property<int>("UserID")
                         .HasColumnType("int");
 
-                    b.Property<int>("pret")
+                    b.Property<int>("ProdusID")
                         .HasColumnType("int");
 
-                    b.HasKey("ID");
+                    b.Property<DateTime>("DataComenzii")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("cantitate")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID", "UserID", "ProdusID");
+
+                    b.HasIndex("ProdusID");
+
+                    b.HasIndex("UserID");
 
                     b.ToTable("Comanda");
                 });
@@ -130,6 +98,10 @@ namespace ProiectASP.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+
+                    b.Property<string>("Categorie")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Descriere")
                         .IsRequired()
@@ -155,78 +127,69 @@ namespace ProiectASP.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
 
-                    b.Property<int?>("AppReviewID")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ComandaID")
-                        .HasColumnType("int");
-
                     b.Property<string>("Nume")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PassHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Salt")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("AppReviewID");
-
-                    b.HasIndex("ComandaID");
+                    b.HasIndex("UserName")
+                        .IsUnique();
 
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("AdresaLivrareUser", b =>
+            modelBuilder.Entity("ProiectASP.Models.AdresaLivrare", b =>
                 {
-                    b.HasOne("ProiectASP.Models.AdresaLivrare", null)
-                        .WithMany()
-                        .HasForeignKey("AdreseLivrareID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("ProiectASP.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersID")
+                        .WithOne("AdreseLivrare")
+                        .HasForeignKey("ProiectASP.Models.AdresaLivrare", "ID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("ComandaProdus", b =>
-                {
-                    b.HasOne("ProiectASP.Models.Comanda", null)
-                        .WithMany()
-                        .HasForeignKey("ComenziID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ProiectASP.Models.Produs", null)
-                        .WithMany()
-                        .HasForeignKey("ProduseID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ProiectASP.Models.User", b =>
-                {
-                    b.HasOne("ProiectASP.Models.AppReview", null)
-                        .WithMany("Users")
-                        .HasForeignKey("AppReviewID");
-
-                    b.HasOne("ProiectASP.Models.Comanda", null)
-                        .WithMany("Users")
-                        .HasForeignKey("ComandaID");
-                });
-
-            modelBuilder.Entity("ProiectASP.Models.AppReview", b =>
-                {
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("ProiectASP.Models.Comanda", b =>
                 {
+                    b.HasOne("ProiectASP.Models.Produs", "Produse")
+                        .WithMany("Comenzi")
+                        .HasForeignKey("ProdusID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ProiectASP.Models.User", "Users")
+                        .WithMany("Comenzi")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Produse");
+
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("ProiectASP.Models.Produs", b =>
+                {
+                    b.Navigation("Comenzi");
+                });
+
+            modelBuilder.Entity("ProiectASP.Models.User", b =>
+                {
+                    b.Navigation("AdreseLivrare")
+                        .IsRequired();
+
+                    b.Navigation("Comenzi");
                 });
 #pragma warning restore 612, 618
         }
