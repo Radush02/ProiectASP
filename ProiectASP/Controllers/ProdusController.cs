@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProiectASP.Models.DTOs;
 using ProiectASP.Exceptions;
 using ProiectASP.Models;
 using ProiectASP.Services.ProdusService;
@@ -10,7 +11,7 @@ namespace ProiectASP.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles="Admin")]
+    //[Authorize(Roles="Admin")]
     public class ProdusController : ControllerBase
     {
         private readonly IProdusServices _produsServices;
@@ -21,7 +22,7 @@ namespace ProiectASP.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateProdus([FromBody] Produs produs)
+        public async Task<IActionResult> CreateProdus(ProdusDTO produs)
         {
             await _produsServices.CreateProdus(produs);
             return Ok();
@@ -42,7 +43,7 @@ namespace ProiectASP.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Produs>> GetAllProduse()
+        public async Task<IEnumerable<ProdusDTO>> GetAllProduse()
         {
             return await _produsServices.GetAllProduse();
         }

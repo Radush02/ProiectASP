@@ -2,6 +2,7 @@
 using ProiectASP.Data;
 using ProiectASP.Exceptions;
 using ProiectASP.Models;
+using ProiectASP.Models.DTOs;
 using ProiectASP.Services;
 
 namespace ProiectASP.Services.ProdusService
@@ -14,9 +15,16 @@ namespace ProiectASP.Services.ProdusService
             _dbContext = dbContext;
         }
 
-        public async Task CreateProdus(Produs produs)
+        public async Task CreateProdus(ProdusDTO produs)
         {
-            _dbContext.Produs.Add(produs);
+            Produs p = new Produs
+            {
+                Nume = produs.Nume,
+                Pret = produs.Pret,
+                Descriere = produs.Descriere,
+                Categorie = produs.Categorie,
+            };
+            _dbContext.Produs.Add(p);
             await _dbContext.SaveChangesAsync();
         }
 
@@ -37,10 +45,24 @@ namespace ProiectASP.Services.ProdusService
             }
         }
 
-        public async Task<IEnumerable<Produs>> GetAllProduse()
+        public async Task<IEnumerable<ProdusDTO>> GetAllProduse()
         {
-            return await Task.FromResult(_dbContext.Produs.ToList());
+            var produse =await Task.FromResult(_dbContext.Produs.ToList());
+
+            List<ProdusDTO> prod = new List<ProdusDTO>();
+            foreach (var p in produse)
+            {
+                prod.Add(new ProdusDTO
+                {
+                    Nume = p.Nume,
+                    Pret = p.Pret,
+                    Descriere = p.Descriere,
+                    Categorie = p.Categorie,
+                });
+            }
+            return prod;
         }
+
 
         public async Task<Produs> GetProdusById(int ProdusId)
         {

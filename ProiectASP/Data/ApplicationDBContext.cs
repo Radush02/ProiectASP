@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 namespace ProiectASP.Data
 {
     //6.0.25
-    public class ApplicationDBContext : DbContext
+    public class ApplicationDBContext : IdentityDbContext<User, IdentityRole<int>, int>
     {
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -17,9 +17,8 @@ namespace ProiectASP.Data
                 .HasOne(u => u.AdreseLivrare)
                 .WithOne()
                 .HasForeignKey<AdresaLivrare>(a => a.ID);
-            modelBuilder.Entity<User>()
-                .HasIndex(u => u.UserName)
-                .IsUnique();
+
+  
 
             modelBuilder.Entity<Comanda>()
                 .HasKey(c => new { c.ID, c.UserID, c.ProdusID });
@@ -37,7 +36,6 @@ namespace ProiectASP.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Produs>().HasKey(p => p.ID);
-            modelBuilder.Entity<User>().HasKey(u => u.ID);
 
             modelBuilder.Entity<Produs>()
             .Property(p => p.Pret)

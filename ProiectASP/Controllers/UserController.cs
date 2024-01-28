@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using ProiectASP.Models;
 using ProiectASP.Services;
-using Microsoft.EntityFrameworkCore;
+using ProiectASP.Repositories;
 using ProiectASP.Models.DTOs.UserDTOs;
 
 namespace ProiectASP.Controllers
@@ -13,73 +10,67 @@ namespace ProiectASP.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserServices _userService;
-
-        public UserController(IUserServices userService)
+        private readonly IUserRepository _userRepository;
+        public UserController(IUserServices userService,IUserRepository userRepository)
         {
             _userService = userService;
+            _userRepository = userRepository;
+        }
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(FullUserDTO user)
+        {
+
+            var result = await _userService.RegisterAsync(user);
+
+                if (result.Succeeded)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    var errors = result.Errors.Select(e => e.Description);
+                    return BadRequest(errors);
+                }
         }
 
-        // GET: api/user
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserInfoDTO>>> GetUsers()
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(UserLoginDTO login)
         {
-            var users = await _userService.GetAllUsers();
-            return Ok(users);
-        }
+            var result = await _userService.LoginAsync(login.UserName, login.Parola, login.Remember);
 
-        // GET: api/user/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<UserInfoDTO>> GetUserById(int id)
-        {
-            var user = await _userService.GetUserById(id);
-
-            if (user == null)
+            if (result.Succeeded)
             {
-                return NotFound();
+                return Ok(new { Message = $"Autentificat la {login.UserName}" });
             }
-
-            return Ok(user);
-        }
-
-        [HttpPost("createWithPassword")]
-        public async Task<IActionResult> CreateWithPassword(FullUserDTO u)
-        {
-            await _userService.CreateWithPassword(u);
-            await _userService.AddAdresa(u);
-            return Ok(u);
-            
-        }
-        [HttpGet("Login")]
-        public async Task<IActionResult> Login(UserLoginDTO user)
-        {
-            if(await _userService.Login(user.UserName, user.Parola)==true)
-            { 
-                return Ok(); 
-            }
-            return BadRequest();
-
-        }
-        // PUT: api/user/5
-        [HttpPut]
-        public async Task<IActionResult> UpdateUser(FullUserDTO user)
-        {
-
-            await _userService.UpdateUser(user);
-            return NoContent();
-        }
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
-        {
-            var user = await _userService.GetUserById(id);
-
-            if (user == null)
+            else if(result.IsLockedOut)
             {
-                return NotFound();
+                return BadRequest("Ai gresit parola de prea multe ori. Contul este blocat.");
             }
+            else
+            {
+                return BadRequest("Parola / user gresit.");
+            }
+        }
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await _userService.LogoutAsync();
+            return Ok(new { Message = "Deconectat cu succes." });
+        }
+        [HttpPost("change")]
+        public async Task<IActionResult> ChangePassword(UserChangePassDTO user)
+        {
 
-            await _userService.DeleteUser(id);
+            var result = await _userService.ChangePasswordAsync(user);
 
-            return NoContent();
+            if (result.Succeeded)
+            {
+                return Ok(new { Message = "Parola schimbata cu succes." });
+            }
+            else
+            {
+                return BadRequest("Nu s-a putut schimba parola.");
+            }
         }
     }
 }

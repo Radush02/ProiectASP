@@ -10,6 +10,6 @@ namespace ProiectASP.Services.ComandaService
         Task UpdateComanda(Comanda comanda);
         Task DeleteComanda(int comandaId);
 
-        Task<IEnumerable<ComandaDetails>> GetComenzi(int userId);
+       // Task<IEnumerable<ComandaDetails>> GetComenzi(int userId);
     }
 }

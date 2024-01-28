@@ -65,7 +65,7 @@ namespace ProiectASP.Controllers
                 return NotFound(ex.Message);
             }
         }
-        [HttpGet("{userId}")]
+/*        [HttpGet("{userId}")]
         public async Task<IActionResult> GetComenzi(int userId)
         {
             try
@@ -77,6 +77,6 @@ namespace ProiectASP.Controllers
             {
                 return NotFound(ex.Message);
             }
-        }
+        }*/
     }
 }

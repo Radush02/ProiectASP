@@ -41,7 +41,7 @@ namespace ProiectASP.Services.ComandaService
             _dbContext.Comanda.Update(comanda);
             await _dbContext.SaveChangesAsync();
         }
-        public async Task<IEnumerable<ComandaDetails>> GetComenzi(int userId)
+/*        public async Task<IEnumerable<ComandaDetails>> GetComenzi(int userId)
         {
             var comenzi = await _comandaRepository.GetComenzi(userId);
             if (comenzi == null)
@@ -50,7 +50,7 @@ namespace ProiectASP.Services.ComandaService
             }
             return comenzi;
         }
-
+*/
         public async Task DeleteComanda(int comandaId)
         {
             var comandaToRemove = await _dbContext.Comanda.Where(u => u.ID == comandaId).ToListAsync();
