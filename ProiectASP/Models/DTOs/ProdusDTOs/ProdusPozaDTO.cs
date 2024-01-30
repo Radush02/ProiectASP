@@ -1,4 +1,4 @@
-﻿namespace ProiectASP.Models.DTOs
+﻿namespace ProiectASP.Models.DTOs.ProdusDTOs
 {
     public class ProdusPozaDTO
     {

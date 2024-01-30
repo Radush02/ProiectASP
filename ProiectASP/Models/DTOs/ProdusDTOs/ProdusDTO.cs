@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ProiectASP.Models.DTOs
+namespace ProiectASP.Models.DTOs.ProdusDTOs
 {
     public class ProdusDTO
     {

@@ -37,7 +37,7 @@ namespace ProiectASP.Repositories.ProdusRepository
         }
         public async Task<Produs> GetProdusByNume(string NumeProdus)
         {
-            var produs = await _dbContext.Produs.FirstOrDefaultAsync(u => u.Nume.ToUpper() == NumeProdus.ToUpper());
+            var produs = await _dbContext.Produs.Where(p=>p.Nume.ToUpper().Contains(NumeProdus.ToUpper())).FirstOrDefaultAsync();
 
             if (produs == null)
             {

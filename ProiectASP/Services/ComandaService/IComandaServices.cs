@@ -1,15 +1,13 @@
-﻿using ProiectASP.Models;
+﻿using ProiectASP.Models.DTOs;
+using ProiectASP.Models;
 
 namespace ProiectASP.Services.ComandaService
 {
     public interface IComandaServices
     {
-        Task<IEnumerable<Comanda>> GetAllComenzi();
-        Task<IEnumerable<Comanda>> GetComandabyId(int userId);
-        Task CreateComanda(Comanda comanda);
-        Task UpdateComanda(Comanda comanda);
+        Task<IEnumerable<ComandaDTO>> GetAllComenzi();
+        Task<IEnumerable<ComandaDTO>> GetComandabyId(int userId);
+        Task CreateComanda(IEnumerable<ComandaDTO> comanda);
         Task DeleteComanda(int comandaId);
-
-       // Task<IEnumerable<ComandaDetails>> GetComenzi(int userId);
     }
 }

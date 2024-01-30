@@ -41,12 +41,18 @@ namespace ProiectASP.Data
             .Property(p => p.Pret)
             .HasColumnType("decimal(18, 2)");
 
+             modelBuilder.Entity<CreditCard>()
+            .HasOne(c => c.Users)
+            .WithMany(u => u.CreditCards)
+            .HasForeignKey(c => c.userID);
+
         }
         public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) : base(options) 
         { 
             
         }
         public DbSet<User> User { get; set; }
+        public DbSet<CreditCard> CreditCard  { get; set; }
         public DbSet<AdresaLivrare> AdresaLivrare { get; set; }
         public DbSet<Comanda> Comanda {  get; set; }
         public DbSet<AppReview> AppReview { get; set; }

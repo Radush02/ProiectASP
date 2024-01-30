@@ -1,4 +1,5 @@
 ﻿using ProiectASP.Models;
+using ProiectASP.Models.DTOs.ProdusDTOs;
 
 namespace ProiectASP.Repositories.ProdusRepository
 {

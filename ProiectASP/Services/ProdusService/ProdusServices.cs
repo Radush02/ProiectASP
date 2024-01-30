@@ -4,7 +4,7 @@ using ProiectASP.Controllers;
 using ProiectASP.Data;
 using ProiectASP.Exceptions;
 using ProiectASP.Models;
-using ProiectASP.Models.DTOs;
+using ProiectASP.Models.DTOs.ProdusDTOs;
 using ProiectASP.Repositories.ProdusRepository;
 using ProiectASP.Services;
 using ProiectASP.Services.AmazonS3Service;
@@ -24,8 +24,6 @@ namespace ProiectASP.Services.ProdusService
         public async Task CreateProdus(ProdusDTO produs, IFormFile poza)
         {
             
-            try
-            {
                 Console.WriteLine(produs.Nume);
                 Produs p = new Produs
                 {
@@ -38,53 +36,76 @@ namespace ProiectASP.Services.ProdusService
                 await _repository.CreateProdus(p);
                 if (poza != null && poza.Length > 0)
                 {
-                    await _s3Service.UploadFileAsync($"{p.ID}.jpg", poza);
+                    await _s3Service.UploadFileAsync($"{p.ID}.png", poza);
                 }
-            }
-            catch (Exception e)
-            {
-                // Handle the file upload error
-                Console.WriteLine($"Error uploading file:{e}");
-            }
         }
 
         public async Task DeleteProdus(int ProdusId)
         {
             var produsToRemove = await _repository.GetProdusByID(ProdusId);
             await _repository.DeleteProdus(produsToRemove);
+            await _s3Service.DeleteFileAsync($"{ProdusId}.png");    
         }
 
-        public async Task<IEnumerable<ProdusDTO>> GetAllProduse()
+        public async Task<IEnumerable<ProdusLinkDTO>> GetAllProduse()
         {
             var produse = await _repository.ListProduse();
 
-            List<ProdusDTO> prod = new List<ProdusDTO>();
+            List<ProdusLinkDTO> prod = new List<ProdusLinkDTO>();
             foreach (var p in produse)
             {
-                prod.Add(new ProdusDTO
+                prod.Add(new ProdusLinkDTO
                 {
-                    Nume = p.Nume,
-                    Pret = p.Pret,
-                    Descriere = p.Descriere,
-                    Categorie = p.Categorie,
+                    produs = new ProdusDTO
+                    {
+                        Nume = p.Nume,
+                        Pret = p.Pret,
+                        Descriere = p.Descriere,
+                        Categorie = p.Categorie,
+
+                    },
+                    linkPoza = _s3Service.GetFileUrl($"{p.ID}.png")
                 });
             }
             return prod;
         }
 
 
-        public async Task<Produs> GetProdusById(int ProdusId)
+        public async Task<ProdusLinkDTO> GetProdusById(int ProdusId)
         {
-            return await _repository.GetProdusByID(ProdusId); ;
+            var produs = await _repository.GetProdusByID(ProdusId);
+            return new ProdusLinkDTO
+            {
+                produs = new ProdusDTO
+                {
+                    Nume = produs.Nume,
+                    Pret = produs.Pret,
+                    Descriere = produs.Descriere,
+                    Categorie = produs.Categorie,
+                },
+                linkPoza = _s3Service.GetFileUrl($"{ProdusId}.png")
+            };
         }
-        public async Task<Produs> GetProdusByNume(string NumeProdus)
+        public async Task<ProdusLinkDTO> GetProdusByNume(string NumeProdus)
         {
-            return await _repository.GetProdusByNume(NumeProdus);
+            var produs = await _repository.GetProdusByNume(NumeProdus);
+            return new ProdusLinkDTO
+            {
+                produs = new ProdusDTO
+                {
+                    Nume = produs.Nume,
+                    Pret = produs.Pret,
+                    Descriere = produs.Descriere,
+                    Categorie = produs.Categorie,
+                },
+                linkPoza = _s3Service.GetFileUrl($"{produs.ID}.png")
+            };
         }
 
-        public async Task UpdateProdus(Produs produs)
+        public async Task UpdateProdus(ProdusDTO produs)
         {
-            var p = await _repository.GetProdusByID(produs.ID);
+            var p = await _repository.GetProdusByID(
+                _repository.GetProdusByNume(produs.Nume).Result.ID);
 
             p.Nume = produs.Nume ?? p.Nume;
             p.Pret = produs.Pret>0 ? produs.Pret:p.Pret;

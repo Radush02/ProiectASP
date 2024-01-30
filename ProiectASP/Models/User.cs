@@ -12,6 +12,7 @@ namespace ProiectASP.Models
             public AdresaLivrare AdreseLivrare { get; set; }
         
             public ICollection<Comanda> Comenzi {  get; set; }
-        }
+            public List<CreditCard> CreditCards { get; set; }
+    }
 
 }

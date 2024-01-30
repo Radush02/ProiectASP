@@ -2,70 +2,105 @@
 using ProiectASP.Data;
 using ProiectASP.Exceptions;
 using ProiectASP.Models;
+using ProiectASP.Models.DTOs;
+using ProiectASP.Models.DTOs.ProdusDTOs;
+using ProiectASP.Models.DTOs.UserDTOs;
 using ProiectASP.Repositories;
+using Microsoft.AspNetCore.Identity;
+using ProiectASP.Repositories.ProdusRepository;
 
 namespace ProiectASP.Services.ComandaService
 {
     public class ComandaServices : IComandaServices
     {
         private readonly IComandaRepository _comandaRepository;
-        private readonly ApplicationDBContext _dbContext;
-        public ComandaServices(IComandaRepository comandaRepository,ApplicationDBContext dbContext)
+        private readonly UserManager<User> _userManager;
+        private readonly IProdusRepository _produsRepository;
+        public ComandaServices(IComandaRepository comandaRepository,UserManager<User> userManager,IProdusRepository produsRepository)
         {
             _comandaRepository = comandaRepository;
-            _dbContext = dbContext;
+            _userManager = userManager;
+            _produsRepository = produsRepository;
         }
 
-        public async Task<IEnumerable<Comanda>> GetAllComenzi()
+        public async Task<IEnumerable<ComandaDTO>> GetAllComenzi()
         {
-            return await Task.FromResult(_dbContext.Comanda.Include(u=>u.Users).ThenInclude(a=>a.AdreseLivrare).Include(p=>p.Produse).ToList());
-        }
-        public async Task<IEnumerable<Comanda>> GetComandabyId(int userId)
-        {
-            var comanda = await _dbContext.Comanda.Where(c => c.UserID == userId).ToListAsync();
-
-            if (comanda == null)
+            var comenzi = await _comandaRepository.GetAllComenzi();
+            var dto = new List<ComandaDTO>();
+            foreach(var com in comenzi)
             {
-                throw new NotFoundException($"User-ul cu ID-ul {userId} nu a dat vreo comanda.");
+                dto.Add(new ComandaDTO
+                {
+                    produs = new ProdusDTO
+                    {
+                        Nume = com.Produse.Nume,
+                        Pret = com.Produse.Pret,
+                        Descriere = com.Produse.Descriere,
+                        Categorie = com.Produse.Categorie
+                    },
+                    user = new UserInfoDTO
+                    {
+                        Nume = com.Users.Nume,
+                        UserName = com.Users.UserName,
+                        Adresa = com.Users.AdreseLivrare.Adresa,
+                        Oras = com.Users.AdreseLivrare.Oras
+                    },
+                    DataComenzii=com.DataComenzii,
+                    cantitate=com.cantitate
+                });
             }
-            return comanda;
+            return dto;
         }
-        public async Task CreateComanda(Comanda comanda)
+        public async  Task<IEnumerable<ComandaDTO>> GetComandabyId(int userId)
         {
-            _dbContext.Comanda.Add(comanda);
-            await _dbContext.SaveChangesAsync();
-        }
-
-        public async Task UpdateComanda(Comanda comanda)
-        {
-            _dbContext.Comanda.Update(comanda);
-            await _dbContext.SaveChangesAsync();
-        }
-/*        public async Task<IEnumerable<ComandaDetails>> GetComenzi(int userId)
-        {
-            var comenzi = await _comandaRepository.GetComenzi(userId);
-            if (comenzi == null)
+            var comenzi = await _comandaRepository.GetComandabyId(userId);
+            var dto = new List<ComandaDTO>();
+            foreach (var com in comenzi)
             {
-                throw new NotFoundException("User-ul nu a dat vreo comanda.");
+                dto.Add(new ComandaDTO
+                {
+                    produs = new ProdusDTO
+                    {
+                        Nume = com.Produse.Nume,
+                        Pret = com.Produse.Pret,
+                        Descriere = com.Produse.Descriere,
+                        Categorie = com.Produse.Categorie
+                    },
+                    user = new UserInfoDTO
+                    {
+                        Nume = com.Users.Nume,
+                        UserName = com.Users.UserName,
+                        Adresa = com.Users.AdreseLivrare.Adresa,
+                        Oras = com.Users.AdreseLivrare.Oras
+                    },
+                    DataComenzii = com.DataComenzii,
+                    cantitate = com.cantitate
+                });
             }
-            return comenzi;
+            return dto;
         }
-*/
+        public async Task CreateComanda(IEnumerable<ComandaDTO> com)
+        {
+            var comanda = new List<Comanda>();
+            foreach(var c in com)
+            {
+                var prodaux = await _produsRepository.GetProdusByNume(c.produs.Nume);
+                var useraux = await _userManager.FindByNameAsync(c.user.UserName);
+                comanda.Add(new Comanda
+                {
+                    DataComenzii = c.DataComenzii,
+                    UserID = useraux.Id,
+                    ProdusID = prodaux.ID,
+                    cantitate = c.cantitate,
+                    Users = useraux,
+                    Produse = prodaux
+                }) ;
+            }
+            await _comandaRepository.CreateComanda(comanda);
+        }
         public async Task DeleteComanda(int comandaId)
         {
-            var comandaToRemove = await _dbContext.Comanda.Where(u => u.ID == comandaId).ToListAsync();
-
-            if (comandaToRemove == null)
-            {
-                throw new NotFoundException($"Nu exista comanda cu ID-ul {comandaId}.");
-            }
-
-            if (comandaToRemove != null)
-            {
-                foreach (var c in comandaToRemove)
-                    _dbContext.Comanda.Remove(c);
-                await _dbContext.SaveChangesAsync();
-            }
+            await _comandaRepository.DeleteComanda(comandaId);
         }
 
     }

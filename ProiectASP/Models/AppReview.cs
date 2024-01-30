@@ -2,8 +2,9 @@
 
 namespace ProiectASP.Models
 {
-    public class AppReview
+    public class AppReview //Unused
     {
+        
         public int ID { get; set; }
         public int UserID { get; set; }
         public string Descriere { get; set; }

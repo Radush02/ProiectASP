@@ -34,6 +34,10 @@ namespace ProiectASP.Services.AmazonS3Service
 
         }
 
+        public async Task DeleteFileAsync(string key)
+        {
+           await _amazonS3.DeleteObjectAsync(_bucket, key);
+        }
         public string GetFileUrl(string key)
         {
             return $"https://{_bucket}.s3.amazonaws.com/{key}";

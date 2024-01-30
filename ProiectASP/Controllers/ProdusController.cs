@@ -2,10 +2,10 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ProiectASP.Models.DTOs;
 using ProiectASP.Exceptions;
 using ProiectASP.Models;
 using ProiectASP.Services.ProdusService;
+using ProiectASP.Models.DTOs.ProdusDTOs;
 
 namespace ProiectASP.Controllers
 {
@@ -44,7 +44,7 @@ namespace ProiectASP.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<ProdusDTO>> GetAllProduse()
+        public async Task<IEnumerable<ProdusLinkDTO>> GetAllProduse()
         {
             return await _produsServices.GetAllProduse();
         }
@@ -78,7 +78,7 @@ namespace ProiectASP.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateProdus([FromBody] Produs produs)
+        public async Task<IActionResult> UpdateProdus([FromBody] ProdusDTO produs)
         {
             await _produsServices.UpdateProdus(produs);
             return Ok();

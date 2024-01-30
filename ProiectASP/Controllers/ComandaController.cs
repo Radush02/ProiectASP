@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ProiectASP.Exceptions;
 using ProiectASP.Models;
+using ProiectASP.Models.DTOs;
 using ProiectASP.Services.ComandaService;
 
 namespace ProiectASP.Controllers
@@ -19,7 +20,7 @@ namespace ProiectASP.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Comanda>> GetAllComenzi()
+        public async Task<IEnumerable<ComandaDTO>> GetAllComenzi()
         {
             return await _comandaServices.GetAllComenzi();
         }
@@ -39,19 +40,11 @@ namespace ProiectASP.Controllers
         }*/
 
         [HttpPost]
-        public async Task<IActionResult> CreateComanda([FromBody] Comanda comanda)
+        public async Task<IActionResult> CreateComanda([FromBody] IEnumerable<ComandaDTO> comanda)
         {
             await _comandaServices.CreateComanda(comanda);
             return Ok();
         }
-
-        [HttpPut]
-        public async Task<IActionResult> UpdateComanda([FromBody] Comanda comanda)
-        {
-            await _comandaServices.UpdateComanda(comanda);
-            return Ok();
-        }
-
         [HttpDelete("{comandaId}")]
         public async Task<IActionResult> DeleteComanda(int comandaId)
         {
