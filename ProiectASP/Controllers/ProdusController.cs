@@ -22,9 +22,10 @@ namespace ProiectASP.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateProdus(ProdusDTO produs)
+        public async Task<IActionResult> CreateProdus([FromForm] ProdusPozaDTO p)
         {
-            await _produsServices.CreateProdus(produs);
+            Console.WriteLine(p.produs.Nume);
+            await _produsServices.CreateProdus(p.produs,p.poza);
             return Ok();
         }
 

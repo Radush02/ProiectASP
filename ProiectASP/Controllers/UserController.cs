@@ -36,14 +36,15 @@ namespace ProiectASP.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserLoginDTO login)
         {
-            var result = await _userService.LoginAsync(login.UserName, login.Parola, login.Remember);
+            var result = await _userService.LoginAsync(login);
 
             if (result.Succeeded)
             {
                 return Ok(new { Message = $"Autentificat la {login.UserName}" });
             }
-            else if(result.IsLockedOut)
+            else if(result.IsLockedOut) //Nu ajunge pana aici inca
             {
+
                 return BadRequest("Ai gresit parola de prea multe ori. Contul este blocat.");
             }
             else

@@ -1,6 +1,15 @@
-﻿namespace ProiectASP.Repositories.ProdusRepository
+﻿using ProiectASP.Models;
+
+namespace ProiectASP.Repositories.ProdusRepository
 {
-    public class IProdusRepository
+    public interface IProdusRepository
     {
+        Task CreateProdus(Produs p);
+        Task<Produs> GetProdusByID(int ProdusId);
+        Task DeleteProdus(Produs p);
+
+        Task<IEnumerable<Produs>> ListProduse();
+        Task<Produs> GetProdusByNume(string NumeProdus);
+        Task UpdateProdus(Produs p);
     }
 }

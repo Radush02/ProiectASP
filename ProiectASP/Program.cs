@@ -7,6 +7,10 @@ using ProiectASP.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using ProiectASP.Models;
+using Amazon.S3;
+using Amazon.Extensions.NETCore.Setup;
+using ProiectASP.Repositories.ProdusRepository;
+using ProiectASP.Services.AmazonS3Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +22,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 
 });
 
+//user identity
 builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
 {
     options.Password.RequireDigit = true;
@@ -31,20 +36,33 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
 .AddEntityFrameworkStores<ApplicationDBContext>()
 .AddDefaultTokenProviders();
 
+
+//S3 pt imagini
+builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
+builder.Services.AddAWSService<IAmazonS3>();
+builder.Services.AddScoped<S3Service>(provider =>
+{
+    var s3Client = provider.GetRequiredService<IAmazonS3>();
+    var bucketName = "dawbucket";
+    return new S3Service(s3Client, bucketName);
+});
+
+
 builder.Services.AddScoped<IUserServices, UserService>();
 builder.Services.AddScoped<IProdusServices, ProdusServices>();
 builder.Services.AddScoped<IComandaServices, ComandaServices>();
 builder.Services.AddScoped<IComandaRepository, ComandaRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IProdusRepository, ProdusRepository>();
 
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
-
-
+app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

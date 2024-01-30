@@ -1,53 +1,62 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Amazon.S3.Model;
+using Microsoft.EntityFrameworkCore;
+using ProiectASP.Controllers;
 using ProiectASP.Data;
 using ProiectASP.Exceptions;
 using ProiectASP.Models;
 using ProiectASP.Models.DTOs;
+using ProiectASP.Repositories.ProdusRepository;
 using ProiectASP.Services;
+using ProiectASP.Services.AmazonS3Service;
+using System;
 
 namespace ProiectASP.Services.ProdusService
 {
     public class ProdusServices : IProdusServices
     {
-        private readonly ApplicationDBContext _dbContext;
-        public ProdusServices(ApplicationDBContext dbContext)
+        private readonly IProdusRepository _repository;
+        private readonly S3Service _s3Service;
+        public ProdusServices(IProdusRepository repository,S3Service s3Service)
         {
-            _dbContext = dbContext;
+            _repository = repository;
+            _s3Service = s3Service;
         }
-
-        public async Task CreateProdus(ProdusDTO produs)
+        public async Task CreateProdus(ProdusDTO produs, IFormFile poza)
         {
-            Produs p = new Produs
+            
+            try
             {
-                Nume = produs.Nume,
-                Pret = produs.Pret,
-                Descriere = produs.Descriere,
-                Categorie = produs.Categorie,
-            };
-            _dbContext.Produs.Add(p);
-            await _dbContext.SaveChangesAsync();
+                Console.WriteLine(produs.Nume);
+                Produs p = new Produs
+                {
+                    Nume = produs.Nume,
+                    Pret = produs.Pret,
+                    Descriere = produs.Descriere,
+                    Categorie = produs.Categorie,
+                };
+
+                await _repository.CreateProdus(p);
+                if (poza != null && poza.Length > 0)
+                {
+                    await _s3Service.UploadFileAsync($"{p.ID}.jpg", poza);
+                }
+            }
+            catch (Exception e)
+            {
+                // Handle the file upload error
+                Console.WriteLine($"Error uploading file:{e}");
+            }
         }
 
         public async Task DeleteProdus(int ProdusId)
         {
-            var produsToRemove = await _dbContext.Produs
-                           .FirstOrDefaultAsync(u => u.ID == ProdusId);
-
-            if (produsToRemove == null)
-            {
-                throw new NotFoundException($"Nu exista produs cu ID-ul {ProdusId}.");
-            }
-
-            if (produsToRemove != null)
-            {
-                _dbContext.Produs.Remove(produsToRemove);
-                await _dbContext.SaveChangesAsync();
-            }
+            var produsToRemove = await _repository.GetProdusByID(ProdusId);
+            await _repository.DeleteProdus(produsToRemove);
         }
 
         public async Task<IEnumerable<ProdusDTO>> GetAllProduse()
         {
-            var produse =await Task.FromResult(_dbContext.Produs.ToList());
+            var produse = await _repository.ListProduse();
 
             List<ProdusDTO> prod = new List<ProdusDTO>();
             foreach (var p in produse)
@@ -66,27 +75,23 @@ namespace ProiectASP.Services.ProdusService
 
         public async Task<Produs> GetProdusById(int ProdusId)
         {
-            var produs = await _dbContext.Produs.FirstOrDefaultAsync(u => u.ID == ProdusId);
-
-            if (produs == null){
-                throw new NotFoundException($"Nu exista produs cu ID-ul {ProdusId}.");
-            }
-            return produs;
+            return await _repository.GetProdusByID(ProdusId); ;
         }
         public async Task<Produs> GetProdusByNume(string NumeProdus)
         {
-            var produs = await _dbContext.Produs.FirstOrDefaultAsync(u => u.Nume.ToUpper() == NumeProdus.ToUpper());
-
-            if (produs == null){
-                throw new NotFoundException($"Nu exista produs cu numele {NumeProdus}.");
-            }
-            return produs;
+            return await _repository.GetProdusByNume(NumeProdus);
         }
 
         public async Task UpdateProdus(Produs produs)
         {
-            _dbContext.Produs.Update(produs);
-            await _dbContext.SaveChangesAsync();
+            var p = await _repository.GetProdusByID(produs.ID);
+
+            p.Nume = produs.Nume ?? p.Nume;
+            p.Pret = produs.Pret>0 ? produs.Pret:p.Pret;
+            p.Descriere = produs.Descriere ?? p.Descriere;
+            p.Categorie = produs.Categorie ?? p.Categorie;
+
+            await _repository.UpdateProdus(p);
         }
     }
 }

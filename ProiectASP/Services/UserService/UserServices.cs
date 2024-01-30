@@ -14,12 +14,11 @@ namespace ProiectASP.Services
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
-        private readonly ApplicationDBContext _dbContext;
-        public UserService(UserManager<User> userManager, SignInManager<User> signInManager,ApplicationDBContext dbContext)
+
+        public UserService(UserManager<User> userManager, SignInManager<User> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _dbContext = dbContext;
         }
         public async Task<IdentityResult> RegisterAsync(FullUserDTO user)
         {
@@ -44,9 +43,9 @@ namespace ProiectASP.Services
 
             return result;
         }
-        public async Task<SignInResult> LoginAsync(string userName, string password, bool rememberMe)
+        public async Task<SignInResult> LoginAsync(UserLoginDTO login)
         {
-            var result = await _signInManager.PasswordSignInAsync(userName, password, rememberMe, lockoutOnFailure: false);
+            var result = await _signInManager.PasswordSignInAsync(login.UserName, login.Parola, login.Remember, lockoutOnFailure: false);
             return result;
         }
 
