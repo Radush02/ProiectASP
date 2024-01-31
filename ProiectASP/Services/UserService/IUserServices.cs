@@ -12,6 +12,7 @@ namespace ProiectASP.Services
         Task<SignInResult> LoginAsync(UserLoginDTO login);
         Task LogoutAsync();
         Task<IdentityResult> ChangePasswordAsync(UserChangePassDTO user);
+        Task MakeAdmin(string username);
 
 
     }

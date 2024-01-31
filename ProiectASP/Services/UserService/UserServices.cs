@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using ProiectASP.Data;
+﻿using System.IdentityModel.Tokens.Jwt;
 using ProiectASP.Models;
-using ProiectASP.Exceptions;
-using Microsoft.EntityFrameworkCore;
-using ProiectASP.Repositories;
+using System.Security.Claims;
 using ProiectASP.Models.DTOs.UserDTOs;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Cryptography.Xml;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace ProiectASP.Services
 {
@@ -19,6 +18,11 @@ namespace ProiectASP.Services
         {
             _userManager = userManager;
             _signInManager = signInManager;
+        }
+        public async Task MakeAdmin(string username)
+        {
+            var x = await _userManager.FindByNameAsync(username);
+            await _userManager.AddToRoleAsync(x, "Admin");
         }
         public async Task<IdentityResult> RegisterAsync(FullUserDTO user)
         {
@@ -38,7 +42,8 @@ namespace ProiectASP.Services
 
             if (result.Succeeded)
             {
-                await _signInManager.SignInAsync(newUser, isPersistent: false);
+                await _userManager.AddToRoleAsync(newUser, "User");
+                TokenHandler(newUser);
             }
 
             return result;
@@ -46,6 +51,7 @@ namespace ProiectASP.Services
         public async Task<SignInResult> LoginAsync(UserLoginDTO login)
         {
             var result = await _signInManager.PasswordSignInAsync(login.UserName, login.Parola, login.Remember, lockoutOnFailure: false);
+            TokenHandler(await _userManager.FindByNameAsync(login.UserName));
             return result;
         }
 
@@ -60,6 +66,30 @@ namespace ProiectASP.Services
 
             var result = await _userManager.ChangePasswordAsync(u, user.ParolaVeche, user.ParolaNoua);
             return result;
+        }
+        public async void TokenHandler(User user)
+        {
+            var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier , user.UserName),
+                    new Claim(ClaimTypes.Name , user.Nume),
+                    new Claim(ClaimTypes.Email , user.Email),
+                    new Claim(ClaimTypes.MobilePhone , user.NrTelefon),
+                    new Claim(ClaimTypes.Role , "User"),
+                };
+            var token = new JwtSecurityToken(
+                issuer: "https://localhost:7259/",
+                audience: "https://localhost:7259/",
+                claims: claims,
+                expires: DateTime.Now.AddDays(7),
+                notBefore: DateTime.Now,
+                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes("rGSSVGNjKoM4qq41wHcssBm4JDzDxfc93rfcAy+id0I=")),
+                SecurityAlgorithms.HmacSha256)
+                );
+            await _signInManager.SignInAsync(user, isPersistent: false);
+
+            var tokenHandler = new JwtSecurityTokenHandler().WriteToken(token);
+            Console.WriteLine(tokenHandler);
         }
     }
 

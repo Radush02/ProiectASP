@@ -11,7 +11,6 @@ namespace ProiectASP.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles="Admin")]
     public class ProdusController : ControllerBase
     {
         private readonly IProdusServices _produsServices;
@@ -21,7 +20,7 @@ namespace ProiectASP.Controllers
             _produsServices = produsServices;
         }
 
-        [HttpPost]
+        [HttpPost,Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateProdus([FromForm] ProdusPozaDTO p)
         {
             Console.WriteLine(p.produs.Nume);
@@ -29,7 +28,7 @@ namespace ProiectASP.Controllers
             return Ok();
         }
 
-        [HttpDelete("{ProdusId}")]
+        [HttpDelete("{ProdusId}"),Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteProdus(int ProdusId)
         {
             try
@@ -43,13 +42,13 @@ namespace ProiectASP.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet,AllowAnonymous]
         public async Task<IEnumerable<ProdusLinkDTO>> GetAllProduse()
         {
             return await _produsServices.GetAllProduse();
         }
 
-        [HttpGet("{ProdusId}")]
+        [HttpGet("{ProdusId}"), AllowAnonymous]
         public async Task<IActionResult> GetProdusById(int ProdusId)
         {
             try
@@ -63,7 +62,7 @@ namespace ProiectASP.Controllers
             }
         }
 
-        [HttpGet("nume/{NumeProdus}")]
+        [HttpGet("nume/{NumeProdus}"), AllowAnonymous]
         public async Task<IActionResult> GetProdusByNume(string NumeProdus)
         {
             try
@@ -77,7 +76,7 @@ namespace ProiectASP.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPut, Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateProdus([FromBody] ProdusDTO produs)
         {
             await _produsServices.UpdateProdus(produs);

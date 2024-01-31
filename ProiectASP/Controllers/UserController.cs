@@ -2,6 +2,7 @@
 using ProiectASP.Services;
 using ProiectASP.Repositories;
 using ProiectASP.Models.DTOs.UserDTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ProiectASP.Controllers
 {
@@ -72,6 +73,12 @@ namespace ProiectASP.Controllers
             {
                 return BadRequest("Nu s-a putut schimba parola.");
             }
+        }
+        [HttpPost("admin"),Authorize(Roles ="Admin")]
+        public async Task<IActionResult> MakeAdmin(string username)
+        {
+           await _userService.MakeAdmin(username);
+            return Ok(new {Message=$"{username} este admin."});
         }
     }
 }
