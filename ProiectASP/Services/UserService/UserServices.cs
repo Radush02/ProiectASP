@@ -3,7 +3,6 @@ using ProiectASP.Models;
 using System.Security.Claims;
 using ProiectASP.Models.DTOs.UserDTOs;
 using Microsoft.AspNetCore.Identity;
-using System.Security.Cryptography.Xml;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -40,19 +39,17 @@ namespace ProiectASP.Services
             };
             var result = await _userManager.CreateAsync(newUser, user.Parola);
 
-            if (result.Succeeded)
-            {
+            if (result.Succeeded){
                 await _userManager.AddToRoleAsync(newUser, "User");
-                TokenHandler(newUser);
             }
 
             return result;
         }
-        public async Task<SignInResult> LoginAsync(UserLoginDTO login)
+        public async Task<KeyValuePair<SignInResult, string>> LoginAsync(UserLoginDTO login)
         {
+            var user = await _userManager.FindByNameAsync(login.UserName);
             var result = await _signInManager.PasswordSignInAsync(login.UserName, login.Parola, login.Remember, lockoutOnFailure: false);
-            TokenHandler(await _userManager.FindByNameAsync(login.UserName));
-            return result;
+            return new KeyValuePair<SignInResult, string>(result,await TokenHandler(user, await _userManager.IsInRoleAsync(user, "Admin")));
         }
 
         public async Task LogoutAsync()
@@ -67,15 +64,16 @@ namespace ProiectASP.Services
             var result = await _userManager.ChangePasswordAsync(u, user.ParolaVeche, user.ParolaNoua);
             return result;
         }
-        public async void TokenHandler(User user)
+        public async Task<string> TokenHandler(User user,bool isAdmin)
         {
+
             var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.NameIdentifier , user.UserName),
                     new Claim(ClaimTypes.Name , user.Nume),
                     new Claim(ClaimTypes.Email , user.Email),
                     new Claim(ClaimTypes.MobilePhone , user.NrTelefon),
-                    new Claim(ClaimTypes.Role , "User"),
+                    new Claim(ClaimTypes.Role,isAdmin?"Admin":"User")
                 };
             var token = new JwtSecurityToken(
                 issuer: "https://localhost:7259/",
@@ -87,9 +85,8 @@ namespace ProiectASP.Services
                 SecurityAlgorithms.HmacSha256)
                 );
             await _signInManager.SignInAsync(user, isPersistent: false);
-
-            var tokenHandler = new JwtSecurityTokenHandler().WriteToken(token);
-            Console.WriteLine(tokenHandler);
+            var x = new JwtSecurityTokenHandler().WriteToken(token);
+            return x;
         }
     }
 

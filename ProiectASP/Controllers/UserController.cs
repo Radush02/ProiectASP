@@ -39,11 +39,11 @@ namespace ProiectASP.Controllers
         {
             var result = await _userService.LoginAsync(login);
 
-            if (result.Succeeded)
+            if (result.Key.Succeeded)
             {
-                return Ok(new { Message = $"Autentificat la {login.UserName}" });
+                return Ok(new {Token=result.Value, Message = $"Autentificat la {login.UserName}" });
             }
-            else if(result.IsLockedOut) //Nu ajunge pana aici inca
+            else if(result.Key.IsLockedOut) //Nu ajunge pana aici inca
             {
 
                 return BadRequest("Ai gresit parola de prea multe ori. Contul este blocat.");

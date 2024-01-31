@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProiectASP.Exceptions;
 using ProiectASP.Models;
@@ -10,6 +11,7 @@ namespace ProiectASP.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ComandaController : ControllerBase
     {
         private readonly IComandaServices _comandaServices;

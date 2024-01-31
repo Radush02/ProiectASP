@@ -2,11 +2,13 @@
 using ProiectASP.Models.DTOs;
 using ProiectASP.Models;
 using ProiectASP.Services.CreditCardService;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ProiectASP.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CreditCardController : ControllerBase
     {
         private readonly ICreditCardService _ccservice;

@@ -11,6 +11,7 @@ namespace ProiectASP.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProdusController : ControllerBase
     {
         private readonly IProdusServices _produsServices;
@@ -28,9 +29,12 @@ namespace ProiectASP.Controllers
             return Ok();
         }
 
-        [HttpDelete("{ProdusId}"),Authorize(Roles = "Admin")]
+        [HttpDelete("{ProdusId}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteProdus(int ProdusId)
         {
+/*            var claims = HttpContext.User.Claims.Select(c => $"{c.Type}: {c.Value}").ToList();
+            Console.WriteLine("Claims: " + string.Join(", ", claims));*/
             try
             {
                 await _produsServices.DeleteProdus(ProdusId);

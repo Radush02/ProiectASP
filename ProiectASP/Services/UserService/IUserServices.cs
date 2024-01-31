@@ -9,7 +9,7 @@ namespace ProiectASP.Services
     public interface IUserServices
     {
         Task<IdentityResult> RegisterAsync(FullUserDTO user);
-        Task<SignInResult> LoginAsync(UserLoginDTO login);
+        Task<KeyValuePair<SignInResult, string>> LoginAsync(UserLoginDTO login);
         Task LogoutAsync();
         Task<IdentityResult> ChangePasswordAsync(UserChangePassDTO user);
         Task MakeAdmin(string username);
