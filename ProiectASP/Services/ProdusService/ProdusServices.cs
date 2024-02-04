@@ -56,6 +56,7 @@ namespace ProiectASP.Services.ProdusService
             {
                 prod.Add(new ProdusLinkDTO
                 {
+                    id=p.ID,
                     produs = new ProdusDTO
                     {
                         Nume = p.Nume,
@@ -64,7 +65,7 @@ namespace ProiectASP.Services.ProdusService
                         Categorie = p.Categorie,
 
                     },
-                    linkPoza = _s3Service.GetFileUrl($"{p.ID}.png")
+                    linkPoza = _s3Service.GetFileUrl($"{p.ID}.png"),
                 });
             }
             return prod;
@@ -76,6 +77,7 @@ namespace ProiectASP.Services.ProdusService
             var produs = await _repository.GetProdusByID(ProdusId);
             return new ProdusLinkDTO
             {
+                id = produs.ID,
                 produs = new ProdusDTO
                 {
                     Nume = produs.Nume,
@@ -91,6 +93,7 @@ namespace ProiectASP.Services.ProdusService
             var produs = await _repository.GetProdusByNume(NumeProdus);
             return new ProdusLinkDTO
             {
+                id = produs.ID,
                 produs = new ProdusDTO
                 {
                     Nume = produs.Nume,

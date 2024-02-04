@@ -18,7 +18,7 @@ namespace ProiectASP.Controllers
             _userRepository = userRepository;
         }
         [HttpPost("register")]
-        public async Task<IActionResult> Register(FullUserDTO user)
+        public async Task<IActionResult> Register([FromForm] FullUserDTO user)
         {
 
             var result = await _userService.RegisterAsync(user);
@@ -35,7 +35,7 @@ namespace ProiectASP.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(UserLoginDTO login)
+        public async Task<IActionResult> Login( UserLoginDTO login)
         {
             var result = await _userService.LoginAsync(login);
 
@@ -60,7 +60,7 @@ namespace ProiectASP.Controllers
             return Ok(new { Message = "Deconectat cu succes." });
         }
         [HttpPost("change")]
-        public async Task<IActionResult> ChangePassword(UserChangePassDTO user)
+        public async Task<IActionResult> ChangePassword([FromForm] UserChangePassDTO user)
         {
 
             var result = await _userService.ChangePasswordAsync(user);

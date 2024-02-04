@@ -1,0 +1,12 @@
+<!-- product.component.html -->
+
+<div *ngFor="let produs of produse">
+    <div class="product-container">
+     <img [src]="getImageUrl(produs.id)" alt="{{ produs.produs.nume }}">
+      <div class="product-details">
+        <h3>{{ produs.produs.nume }}</h3>
+        <p>{{ produs.produs.descriere }}</p>
+        <p>Price: {{ produs.produs.pret }}</p>
+      </div>
+    </div>
+  </div>
