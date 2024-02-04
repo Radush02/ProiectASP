@@ -18,7 +18,7 @@ namespace ProiectASP.Controllers
             _userRepository = userRepository;
         }
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromForm] FullUserDTO user)
+        public async Task<IActionResult> Register(FullUserDTO user)
         {
 
             var result = await _userService.RegisterAsync(user);

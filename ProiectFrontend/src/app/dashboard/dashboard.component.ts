@@ -27,6 +27,9 @@ export class DashboardComponent implements OnInit {
         console.error(error);
       }
     );
+    if(!localStorage.getItem('token')){
+      this.router.navigate(['/login']);
+    }
   }
 
   getImageUrl(imageName: string): string {
