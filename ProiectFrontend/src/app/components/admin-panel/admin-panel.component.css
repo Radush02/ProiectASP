@@ -1,0 +1,25 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+  }
+  
+  .left-button, .right-button {
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+  }
+  
+.center-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* This ensures the container takes the full height of the viewport */
+  }
+  
+  label, input, button {
+    margin: 5px;
+  }

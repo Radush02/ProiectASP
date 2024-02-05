@@ -27,13 +27,13 @@ namespace ProiectASP.Data
                 .HasOne(c => c.Users)
                 .WithMany(u => u.Comenzi)  
                 .HasForeignKey(c => c.UserID)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Comanda>()
                 .HasOne(c => c.Produse)
                 .WithMany(p => p.Comenzi)
                 .HasForeignKey(c => c.ProdusID)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Produs>().HasKey(p => p.ID);
 

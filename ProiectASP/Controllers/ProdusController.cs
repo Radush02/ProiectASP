@@ -29,8 +29,8 @@ namespace ProiectASP.Controllers
             return Ok();
         }
 
-        [HttpDelete("{ProdusId}")]
-        [Authorize(Roles = "Admin")]
+        [HttpDelete("{ProdusId}"),Authorize(Roles ="Admin")]
+        [AllowAnonymous]
         public async Task<IActionResult> DeleteProdus(int ProdusId)
         {
 /*            var claims = HttpContext.User.Claims.Select(c => $"{c.Type}: {c.Value}").ToList();

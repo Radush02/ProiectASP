@@ -1,0 +1,13 @@
+<!-- product.component.html -->
+<div class="navbar">
+    <button class="left-button" routerLink="/dashboard">Dashboard</button>
+    <button class="left-button" routerLink="/userInfo">Informatii despre cont</button>
+    <button *ngIf="role=='Admin'"class="right-button" routerLink="/adminPanel">Admin Panel</button>
+    <button class="right-button" (click)="logout()">Logout from {{username}}</button>
+</div>
+
+<div>
+    <label for="productName">Nume Produs:</label>
+    <input type="text" id="productName" [(ngModel)]="produse" placeholder="Introdu un produs">
+    <button (click)="deleteProdus(produse)">Sterge</button>
+</div>
