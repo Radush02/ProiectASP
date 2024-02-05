@@ -17,7 +17,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh; /* This ensures the container takes the full height of the viewport */
+    height: 100vh; 
   }
   
   label, input, button {

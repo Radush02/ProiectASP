@@ -6,9 +6,12 @@ import { authGuard } from './guards/auth.guard';
 import { loggedGuard } from './guards/logged.guard';
 import { adminGuard } from './guards/admin.guard';
 import { AdminPanelComponent } from './components/admin-panel/admin-panel.component';
+import { InfoComponent } from './components/info/info.component';
+
 export const routes: Routes = [
     {path: 'dashboard', component:DashboardComponent,canActivate:[authGuard]},
     {path: 'register',component:RegisterComponent,canActivate:[loggedGuard]},
     {path: 'login', component:LoginComponent,canActivate:[loggedGuard]},
-    {path: 'adminPanel', component:AdminPanelComponent,canActivate:[adminGuard]}
+    {path: 'adminPanel', component:AdminPanelComponent,canActivate:[adminGuard]},
+    {path: 'userInfo', component:InfoComponent,canActivate:[authGuard]}
 ];
