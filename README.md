@@ -13,9 +13,9 @@ Puncte extra (2 pct pentru recuperare puncte prezenta; daca totusi aveti si full
 - [X] Upload fisiere pe S3 (AWS) sau Storage Account (Azure) (1pct)
 - [ ] Auth cu refresh token (1 pct)
 
-Frontend(4p):
- - [ ] Cel putin 3 componente. Existenta rutelor(simple + parametru).
- - [ ] Cel putin 3 servicii conectate la serverul din .Net . Afisarea de date din servicii in componente.
+Frontend(2p):
+ - [X] Cel putin 3 componente. Existenta rutelor(simple + parametru).
+ - [ ] Cel putin ~~3~~ 2 servicii conectate la serverul din .Net . Afisarea de date din servicii in componente.
  - [ ] Cel putin 1 directiva. (pe langa cea facuta la laborator) 
- - [ ] Cel putin 1 pipe
- - [ ] Register + Login (cu reactive forms) + Implementare Guard
+ - [X] Cel putin 1 pipe
+ - [X] Register + Login (cu reactive forms) + Implementare Guard

@@ -1,5 +1,5 @@
 import { Component,OnInit } from '@angular/core';
-import { Router} from '@angular/router';
+import { Router,RouterModule,RouterOutlet} from '@angular/router';
 import { HttpClient,HttpHeaders} from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { S3Service } from '../../services/s3.service';
@@ -9,7 +9,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-admin-panel',
   standalone: true,
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule,FormsModule,RouterModule,RouterOutlet],
   providers: [ProdusService,UserService],
   templateUrl: './admin-panel.component.html',
   styleUrl: './admin-panel.component.css'
