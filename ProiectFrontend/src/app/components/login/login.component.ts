@@ -3,7 +3,9 @@ import { RouterOutlet,Router} from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient,HttpClientModule} from '@angular/common/http';
 import { FormBuilder,FormGroup,Validators,ReactiveFormsModule} from '@angular/forms';
-import { UserService } from '../services/user.service';
+import { UserService } from '../../services/user.service';
+import { CookieService } from 'ngx-cookie-service';
+//import { authGuard } from '../../guards/auth.guard';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +18,7 @@ import { UserService } from '../services/user.service';
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   errorMessage="";
-  constructor(private fb: FormBuilder, private httpClient: HttpClient,private router:Router,private loginService:UserService) {
+  constructor(private fb: FormBuilder, private httpClient: HttpClient,private router:Router,private loginService:UserService,private cookieService:CookieService) {
     this.loginForm=this.fb.group({
       userName: ['',Validators.required],
       parola: ['',[Validators.required,Validators.minLength(8)]],
@@ -25,18 +27,20 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    this.loginService.login(this.loginForm.value).subscribe((response: any) => {
-      localStorage.setItem('token', response.token);
-      this.errorMessage='Conectat';
-      this.router.navigate(['/dashboard']);
-
-    }, (error: any) => {
-      console.error(error);
-      this.errorMessage = error.error;
-    });
+    this.loginService.login(this.loginForm.value).subscribe(
+      (response: any) => {
+        this.cookieService.set
+        ('token', response.token, undefined, '/', undefined, false, "Strict");
+        this.errorMessage = 'Conectat';
+        this.router.navigate(['/dashboard']);
+      },
+      (error: any) => {
+        console.error(error);
+        this.errorMessage = error.error;
+      }
+    );
   }
   register(){
-    console.log('aaaaa');
     this.router.navigate(['/register']);
   }
   ngOnInit(){
@@ -46,10 +50,10 @@ export class LoginComponent implements OnInit {
       remember: [false,Validators.required]
     });
     setTimeout(() => {
-      if (localStorage.getItem('token')) {
+      if (this.loginService.isLoggedIn()!="") {
         this.router.navigate(['/dashboard']);
       }
     });
   }
 }
-export default LoginComponent;
+

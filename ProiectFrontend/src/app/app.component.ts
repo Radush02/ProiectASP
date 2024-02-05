@@ -3,7 +3,7 @@ import {Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rout
 import { CommonModule } from '@angular/common';
 import { HttpClient,HttpClientModule} from '@angular/common/http';
 import { FormsModule, NgModel } from '@angular/forms';
-import { LoginComponent } from './login/login.component';
+import { LoginComponent } from './components/login/login.component';
 @Component({
   selector: 'app-root',
   standalone: true,

@@ -1,8 +1,14 @@
 <!-- product.component.html -->
+<div class="navbar">
+  <button class="left-button" routerLink="/dashboard">Dashboard</button>
 
+  <button class="right-button" (click)="logout()">Logout from {{username}}</button>
+</div>
+
+<br><br>
 <div *ngFor="let produs of produse">
     <div class="product-container">
-     <img [src]="getImageUrl(produs.id)" alt="{{ produs.produs.nume }}">
+     <img loading=lazy [src]="getImageUrl(produs.id)" alt="{{ produs.produs.nume }}">
       <div class="product-details">
         <h3>{{ produs.produs.nume }}</h3>
         <p>{{ produs.produs.descriere }}</p>
